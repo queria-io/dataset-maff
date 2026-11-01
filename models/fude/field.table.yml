@@ -1,0 +1,46 @@
+schema: fude
+name: field
+title: 筆ポリゴン（農地の区画）
+description: |-
+  農林水産省の筆ポリゴン。1 行が 1 区画で、田か畑の 1 枚の形を持つ。全国の耕地を収録する。
+  航空写真・衛星画像を目視で判読して描いた区画で、現地で確かめたものではない。土地の権利関係や筆界を示すものではなく、登記の筆（moj データセット）とは 1 対 1 にならない。
+  田か畑かも写真の判読による。区画の形は毎年描き直され、polygon_uuid は年度ごとに振り直される。
+  農業集落コードは区画の重心が入る農業集落で、農林業センサスの農業集落別の数字とこのコードでつなげる。市区町村コードはその先頭 5 桁。
+
+  出典：「筆ポリゴンデータ（2026年度公開）」（農林水産省）。Queria が「地域の農業を見て・知って・活かすDB」の農業集落コード付きの FlatGeobuf を表に加工して作成した。
+primary_key: [polygon_uuid]
+sources:
+  - path: https://www.maff.go.jp/j/tokei/census/shuraku_data/2025/mb/index.html
+  - path: https://www.maff.go.jp/j/tokei/porigon/
+fields:
+  - name: polygon_uuid
+    title: 筆ポリゴン ID
+    description: 原典の UUID。年度ごとに振り直される
+  - name: land_type
+    title: 耕地の種類のコード
+    description: 100 が田、200 が畑
+    extensions: { queria: { semantic: { role: dimension } } }
+  - name: land_type_name
+    title: 耕地の種類
+    description: 田 / 畑
+    extensions: { queria: { semantic: { role: dimension } } }
+  - name: agricultural_community_code
+    title: 農業集落コード
+    description: 10 桁。先頭 5 桁が市区町村コード、続く 2 桁が旧市区町村、残り 3 桁が農業集落
+  - name: city_code
+    title: 市区町村コード（5 桁）
+    description: 農業集落コードの先頭 5 桁（検査数字なし）
+    extensions: { queria: { semantic: { role: entity, name: city } } }
+  - name: lg_code
+    title: 全国地方公共団体コード
+    description: city_code に検査数字を付けた 6 桁
+    extensions: { queria: { semantic: { role: entity, name: city } } }
+  - name: issue_year
+    title: 公開年度
+  - name: lng
+    title: 重心の経度
+  - name: lat
+    title: 重心の緯度
+  - name: geometry
+    title: 区画の形
+    description: マルチポリゴン（経緯度）

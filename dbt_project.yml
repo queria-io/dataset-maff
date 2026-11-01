@@ -1,0 +1,25 @@
+name: "maff"
+version: "1.0.0"
+
+profile: "maff"
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros", "shared/macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  maff:
+    +database: maff
+    fude:
+      +materialized: table
+      # 農業集落・市区町村で引くので、行グループを 8,192 行にする（1 区画の形が約 150B で、1 つ 1MB 前後）。
+      # 設定はスキーマに付く (dbt は __dbt_tmp に書いてから改名するので、テーブルに付けても効かない)
+      # PR のビルド確認（ci/profiles.yml、target ci）は DuckLake でないので付けない
+      +pre-hook: "{{ \"CALL maff.set_option('parquet_row_group_size', 8192, schema => 'fude')\" if target.name != 'ci' else '' }}"

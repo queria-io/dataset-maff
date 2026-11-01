@@ -1,0 +1,17 @@
+name: Sync
+
+# 原典は年 1 回（春）更新される。全国の取得と変換に時間がかかるので、手動でだけ回す
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    uses: queria-io/dataset-shared/.github/workflows/sync.yml@main
+    with:
+      dataset_name: maff
+      timeout_minutes: 240
+    secrets: inherit
