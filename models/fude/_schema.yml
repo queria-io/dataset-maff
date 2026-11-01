@@ -1,0 +1,22 @@
+version: 2
+
+models:
+- name: field
+  description: 筆ポリゴン。1 行が 1 区画。
+  access: public
+  columns:
+  - name: polygon_uuid
+    data_tests: [unique, not_null]
+  - name: land_type
+    # 原典に無かった地目が出てきたら止める
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values: [100, 200]
+  - name: agricultural_community_code
+    data_tests: [not_null]
+  - name: lg_code
+    data_tests: [not_null]
+  - name: geometry
+    data_tests: [not_null]
