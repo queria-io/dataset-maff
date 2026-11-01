@@ -34,7 +34,7 @@ contributors:
     path: https://www.maff.go.jp/
     roles: [rightsHolder]
 spatial_coverage: [JP]
-update_frequency: annual
+update_frequency: yearly
 schemas:
   - name: fude
     title: 筆ポリゴン
