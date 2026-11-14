@@ -4,7 +4,7 @@
 name: maff
 title: 農林水産省 筆ポリゴン（農地の区画）
 description: |-
-  農林水産省の筆ポリゴン（2026年度公開）です。全国の田と畑を 1 枚ずつ区画の形で収録し、田か畑か、重心の経緯度、区画が入る農業集落のコードを持ちます。
+  農林水産省の筆ポリゴン（2026年度公開）です。全国の田と畑を 1 枚ずつ区画の形で収録し、田か畑か、重心の経緯度、区画が入る農業集落のコードを持ちます。行政事業レビューのシートが関係する計画・通知等として挙げる農林水産省のサイトの PDF も、ページごとの本文を持ちます。
 
   出典：「筆ポリゴンデータ（2026年度公開）」（農林水産省）。Queria が加工したものです。
 keywords:
@@ -17,11 +17,15 @@ keywords:
   - 農業集落
   - 農林業センサス
   - 農林水産省
+  - 行政事業レビュー
+  - 計画・通知等
 homepage: https://github.com/queria-io/dataset-maff
 language: ja
 licenses:
   - CC-BY-4.0
 sources:
+  - title: 行政事業レビュー見える化サイト（行政改革推進本部事務局）
+    path: https://rssystem.go.jp
   - title: 地域の農業を見て・知って・活かすDB 筆ポリゴンデータ
     path: https://www.maff.go.jp/j/tokei/census/shuraku_data/2025/mb/index.html
   - title: 農地の区画情報（筆ポリゴン）のデータ提供・利用
@@ -33,6 +37,8 @@ contributors:
 spatial_coverage: [JP]
 update_frequency: yearly
 schemas:
+  - name: plans
+    title: 計画・通知等
   - name: fude
     title: 筆ポリゴン
 extensions:

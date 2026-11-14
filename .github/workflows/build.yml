@@ -23,4 +23,5 @@ jobs:
       - run: uv run python -c "import main; main.download_fude()"
         env:
           MAFF_PREFECTURES: "13,14"
+      - run: uv run python -c "from pipelines import plans; plans.download_plans(); plans.build_plans_parquet()"
       - run: uv run dbt build --profiles-dir ci

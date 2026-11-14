@@ -8,6 +8,7 @@ import logging
 
 from dbt.cli.main import dbtRunner
 
+from pipelines import plans
 from pipelines.fude import download_fude
 
 # dbt を読み込むとルートロガーが先に設定されるので、force で上書きする
@@ -24,10 +25,14 @@ def dbt_build():
 
 
 def main():
-    logger.info("1/2: fude (筆ポリゴン)")
+    logger.info("1/3: fude (筆ポリゴン)")
     download_fude()
 
-    logger.info("2/2: dbt build")
+    logger.info("2/3: plans (行政事業レビューが挙げる計画・通知等)")
+    plans.download_plans()
+    plans.build_plans_parquet()
+
+    logger.info("3/3: dbt build")
     dbt_build()
 
 
