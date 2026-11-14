@@ -23,3 +23,5 @@ models:
       # 設定はスキーマに付く (dbt は __dbt_tmp に書いてから改名するので、テーブルに付けても効かない)
       # PR のビルド確認（ci/profiles.yml、target ci）は DuckLake でないので付けない
       +pre-hook: "{{ \"CALL maff.set_option('parquet_row_group_size', 8192, schema => 'fude')\" if target.name != 'ci' else '' }}"
+    plans:
+      +materialized: table
