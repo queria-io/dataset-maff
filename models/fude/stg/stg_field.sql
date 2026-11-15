@@ -1,5 +1,4 @@
-{# 筆ポリゴン。1 行が 1 区画（田か畑の 1 枚）。pipelines/fude.py が都道府県ごとに書いた Parquet を束ねる。
-   地域で引くので農業集落コードの順に並べる。農業集落コードの先頭 5 桁は市区町村コード。 #}
+{# 筆ポリゴンに型を付け、列名を付け替える。農業集落コードの先頭 5 桁は市区町村コード。 #}
 
 select
     polygon_uuid,
@@ -12,5 +11,4 @@ select
     point_lng as lng,
     point_lat as lat,
     st_geomfromwkb(geometry) as geometry
-from read_parquet('data/maff/fude/*.parquet')
-order by agricultural_community_code, lat, lng
+from {{ ref('raw_field') }}
