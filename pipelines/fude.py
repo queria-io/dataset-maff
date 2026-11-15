@@ -5,22 +5,27 @@
 分割 zip はつなぐと 1 つの zip になり、中に FlatGeobuf が 1 つ入っている。
 全国で zip が 5.4GB、FlatGeobuf が約 13GB あるので、都道府県ごとに
 取る → つなぐ → 展開 → Parquet にする → zip と FlatGeobuf を消す、を順に回す。
-Parquet が既にある都道府県は取り直さない。
+Parquet と取得の記録が既にある都道府県は取り直さない。
 
-出力: data/maff/fude/<都道府県コード>.parquet（形は WKB）
+取得の記録（source_file の行）は、分割ファイルごとの行と、つないだ zip の行（url は NULL）を
+data/maff/fude/source_file.ndjson に書く。筆の行はつないだ zip の sha256 を指す。
+
+出力: data/maff/fude/<都道府県コード>.parquet（形は WKB）、data/maff/fude/source_file.ndjson
 """
 
+import hashlib
+import json
 import logging
 import os
 import re
-import shutil
 import zipfile
+from datetime import UTC, datetime
 from itertools import groupby
 from pathlib import Path
 
 import duckdb
 
-from shared.fetch import download, fetch, replacing
+from shared.fetch import fetch, fetch_file, replacing, write_atomic
 
 logger = logging.getLogger("pipelines")
 
@@ -28,6 +33,7 @@ PAGE_URL = "https://www.maff.go.jp/j/tokei/census/shuraku_data/2025/mb/index.htm
 PART = re.compile(r'href="(https://[^"]+/MB0001_\d{4}_\d{4}_(\d{2})\.zip\.\d{3})"')
 OUT = Path("data/maff/fude")
 WORK = Path("data/maff/work")
+SOURCE_FILES = OUT / "source_file.ndjson"
 
 
 def list_parts(html: str) -> dict[str, list[str]]:
@@ -41,16 +47,48 @@ def selected(prefs: list[str]) -> list[str]:
     return [p for p in prefs if not wanted or p in wanted.split(",")]
 
 
-def fetch_zip(urls: list[str], path: Path) -> Path:
-    """分割 zip を順に取ってつなぎ、1 つの zip にする。"""
+def fetch_zip(urls: list[str], path: Path) -> tuple[Path, list[dict]]:
+    """分割 zip を順に取ってつなぎ、1 つの zip にする。分割ファイルとつないだ zip の取得の記録を返す。"""
     part = path.with_suffix(".part.zip")
+    records = []
+    joined_hash = hashlib.sha256()
     with path.open("wb") as joined:
         for url in urls:
-            download(url, part)
+            record = fetch_file(url, part)
+            records.append({"file": url.rsplit("/", 1)[1], "page_url": PAGE_URL, **record})
             with part.open("rb") as handle:
-                shutil.copyfileobj(handle, joined)
+                while block := handle.read(1 << 20):
+                    joined.write(block)
+                    joined_hash.update(block)
             part.unlink()
-    return path
+    name = urls[0].rsplit("/", 1)[1].rsplit(".", 1)[0]
+    records.append(
+        {
+            "file": name,
+            "url": None,
+            "page_url": PAGE_URL,
+            "sha256": joined_hash.hexdigest(),
+            "bytes": path.stat().st_size,
+            "media_type": "application/zip",
+            "retrieved_at": datetime.now(UTC).isoformat(timespec="seconds"),
+            "etag": None,
+            "last_modified": None,
+        }
+    )
+    return path, records
+
+
+def read_records() -> dict[str, list[dict]]:
+    """都道府県コード → その都道府県の取得の記録。"""
+    if not SOURCE_FILES.exists():
+        return {}
+    rows = [json.loads(line) for line in SOURCE_FILES.read_text().splitlines()]
+    return {pref: [r for r in rows if r["prefecture_code"] == pref] for pref in {r["prefecture_code"] for r in rows}}
+
+
+def write_records(records: dict[str, list[dict]]) -> None:
+    lines = "".join(json.dumps(r, ensure_ascii=False) + "\n" for pref in sorted(records) for r in records[pref])
+    write_atomic(SOURCE_FILES, lines.encode())
 
 
 def extract_fgb(archive: Path) -> Path:
@@ -78,13 +116,17 @@ def write_parquet(fgb: Path, path: Path) -> int:
     return con.execute(f"SELECT count(*) FROM '{path.as_posix()}'").fetchone()[0]
 
 
-def build_prefecture(pref: str, urls: list[str]) -> None:
+def build_prefecture(pref: str, urls: list[str], records: dict[str, list[dict]]) -> None:
     path = OUT / f"{pref}.parquet"
-    if path.exists():
+    if path.exists() and pref in records:
         logger.info("  %s: 取得済み", pref)
         return
     WORK.mkdir(parents=True, exist_ok=True)
-    rows = write_parquet(extract_fgb(fetch_zip(urls, WORK / f"{pref}.zip")), path)
+    archive, fetched = fetch_zip(urls, WORK / f"{pref}.zip")
+    rows = write_parquet(extract_fgb(archive), path)
+    records[pref] = [{"prefecture_code": pref, **r} for r in fetched]
+    # 途中で止まっても、取り込んだ都道府県を次の実行で取り直さない
+    write_records(records)
     logger.info("  %s: %d 区画（分割 %d）", pref, rows, len(urls))
 
 
@@ -93,5 +135,6 @@ def download_fude() -> None:
     if len(parts) != 47:
         raise RuntimeError(f"都道府県の数が 47 ではない: {len(parts)}")
     OUT.mkdir(parents=True, exist_ok=True)
+    records = read_records()
     for pref in selected(sorted(parts)):
-        build_prefecture(pref, parts[pref])
+        build_prefecture(pref, parts[pref], records)

@@ -10,5 +10,7 @@ select
     cast(issue_year as integer) as issue_year,
     point_lng as lng,
     point_lat as lat,
-    st_geomfromwkb(geometry) as geometry
+    st_geomfromwkb(geometry) as geometry,
+    -- 行を読んだ都道府県（Parquet の名前）
+    regexp_extract(filename, '([0-9]{2})\.parquet$', 1) as source_prefecture_code
 from {{ ref('raw_field') }}
