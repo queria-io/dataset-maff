@@ -1,5 +1,6 @@
-schema: fude
-name: source_file
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: fude.source_file
 title: 筆ポリゴンの元のファイル
 description: |-
   fude.field を作った元のファイルの一覧です。配布元は都道府県ごとに zip を分割して（.zip.001、.zip.002 …）配っているので、分割ファイルごとの行と、それをつないだ zip の行があります。
@@ -36,4 +37,5 @@ fields:
     title: ファイル名
   - name: prefecture_code
     title: 都道府県コード
-    extensions: { queria: { semantic: { role: entity, name: prefecture } } }
+    semantic: {role: entity, name: prefecture}
+---
