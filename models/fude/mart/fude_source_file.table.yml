@@ -1,0 +1,39 @@
+schema: fude
+name: source_file
+title: 筆ポリゴンの元のファイル
+description: |-
+  fude.field を作った元のファイルの一覧です。配布元は都道府県ごとに zip を分割して（.zip.001、.zip.002 …）配っているので、分割ファイルごとの行と、それをつないだ zip の行があります。
+
+  - 分割ファイルの行は、取得した URL・取得日時・応答の ETag・Last-Modified と sha256 を持ちます
+  - つないだ zip の行は url が NULL です。同じ都道府県の分割ファイルを番号順につないだものです
+  - fude.field の source_sha256 は、つないだ zip の行の sha256 を指します
+  - ファイル本体は保存していません。分割ファイルは url から取得できます
+primary_key: [file]
+sources:
+  - path: https://www.maff.go.jp/j/tokei/census/shuraku_data/2025/mb/index.html
+fields:
+  - name: url
+    title: ファイルの URL
+    description: つないだ zip の行は NULL
+  - name: page_url
+    title: 掲載ページの URL
+  - name: sha256
+    title: ファイルの sha256
+  - name: bytes
+    title: バイト数
+  - name: media_type
+    title: メディアタイプ
+  - name: retrieved_at
+    title: 取得した日時
+    description: UTC。つないだ zip の行はつないだ日時
+  - name: etag
+    title: ETag
+    description: 取得したときの応答の ETag ヘッダー。無ければ NULL
+  - name: last_modified
+    title: Last-Modified
+    description: 取得したときの応答の Last-Modified ヘッダー。無ければ NULL
+  - name: file
+    title: ファイル名
+  - name: prefecture_code
+    title: 都道府県コード
+    extensions: { queria: { semantic: { role: entity, name: prefecture } } }

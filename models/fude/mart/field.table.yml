@@ -43,3 +43,6 @@ fields:
   - name: geometry
     title: 区画の形
     description: マルチポリゴン（経緯度）
+  - name: source_sha256
+    title: 元のファイル
+    description: 区画を読んだ zip（都道府県の分割ファイルをつないだもの）の sha256。fude.source_file の sha256 を指す

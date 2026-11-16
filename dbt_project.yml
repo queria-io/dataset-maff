@@ -18,10 +18,21 @@ models:
   maff:
     +database: maff
     fude:
-      +materialized: table
+      # 2,800 万行あるので、raw と stg はテーブルにせず mart の中で展開する
+      raw:
+        +materialized: ephemeral
+      stg:
+        +materialized: ephemeral
+      mart:
+        +materialized: table
       # 農業集落・市区町村で引くので、行グループを 8,192 行にする（1 区画の形が約 150B で、1 つ 1MB 前後）。
       # 設定はスキーマに付く (dbt は __dbt_tmp に書いてから改名するので、テーブルに付けても効かない)
       # PR のビルド確認（ci/profiles.yml、target ci）は DuckLake でないので付けない
       +pre-hook: "{{ \"CALL maff.set_option('parquet_row_group_size', 8192, schema => 'fude')\" if target.name != 'ci' else '' }}"
     plans:
-      +materialized: table
+      raw:
+        +materialized: table
+      stg:
+        +materialized: view
+      mart:
+        +materialized: table
