@@ -1,5 +1,6 @@
-schema: fude
-name: field
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: fude.field
 title: 筆ポリゴン（農地の区画）
 description: |-
   農地の区画です。1 行が田か畑の 1 枚で、区画の形と農業集落コードを持ちます。
@@ -18,22 +19,22 @@ fields:
   - name: land_type
     title: 耕地の種類のコード
     description: 100 が田、200 が畑
-    extensions: { queria: { semantic: { role: dimension } } }
+    semantic: {role: dimension}
   - name: land_type_name
     title: 耕地の種類
     description: 田 / 畑
-    extensions: { queria: { semantic: { role: dimension } } }
+    semantic: {role: dimension}
   - name: agricultural_community_code
     title: 農業集落コード
     description: 10 桁。市区町村 5 桁・旧市区町村 2 桁・農業集落 3 桁
   - name: city_code
     title: 市区町村コード（5 桁）
     description: 農業集落コードの先頭 5 桁（検査数字なし）
-    extensions: { queria: { semantic: { role: entity, name: city } } }
+    semantic: {role: entity, name: city}
   - name: lg_code
     title: 全国地方公共団体コード
     description: city_code に検査数字を付けた 6 桁
-    extensions: { queria: { semantic: { role: entity, name: city } } }
+    semantic: {role: entity, name: city}
   - name: issue_year
     title: 公開年度
   - name: lng
@@ -46,3 +47,4 @@ fields:
   - name: source_sha256
     title: 元のファイル
     description: 区画を読んだ zip（都道府県の分割ファイルをつないだもの）の sha256。fude.source_file の sha256 を指す
+---

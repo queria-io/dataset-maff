@@ -1,6 +1,4 @@
-# この dataset.yml は fdl commit が読む（FDL の dataset.json を YAML で書いたもの）。
-# 表の説明は models/ の *.table.yml に書く。表と列の型・NULL・行数は fdl commit がカタログから埋める。
-# Queria だけの項目（テーマ・カバー・列の意味）は extensions.queria に書く。
+$schema: https://queria.io/schemas/dataset/v1.json
 name: maff
 title: 農林水産省 筆ポリゴン（農地の区画）
 description: |-
@@ -41,7 +39,5 @@ schemas:
     title: 計画・通知等
   - name: fude
     title: 筆ポリゴン
-extensions:
-  queria:
-    themes: [agriculture, land_climate]
-    cover: 🌾
+themes: [agriculture, land_climate]
+cover: 🌾
