@@ -25,17 +25,17 @@ licenses:
 sources:
   - id: rssystem
     title: 行政事業レビュー見える化サイト（行政改革推進本部事務局）
-    path: https://rssystem.go.jp
+    url: https://rssystem.go.jp
   - id: 2025-mb
     title: 地域の農業を見て・知って・活かすDB 筆ポリゴンデータ
-    path: https://www.maff.go.jp/j/tokei/census/shuraku_data/2025/mb/index.html
+    url: https://www.maff.go.jp/j/tokei/census/shuraku_data/2025/mb/index.html
   - id: porigon
     title: 農地の区画情報（筆ポリゴン）のデータ提供・利用
-    path: https://www.maff.go.jp/j/tokei/porigon/
+    url: https://www.maff.go.jp/j/tokei/porigon/
 contributors:
   - id: maff
     title: 農林水産省
-    path: https://www.maff.go.jp/
+    url: https://www.maff.go.jp/
     roles: [rightsHolder]
 spatial_coverage: [JP]
 update_frequency: yearly
