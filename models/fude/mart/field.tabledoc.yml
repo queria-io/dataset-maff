@@ -26,11 +26,11 @@ columns:
   - name: city_code
     title: 市区町村コード（5 桁）
     description: 農業集落コードの先頭 5 桁（検査数字なし）
-    entity: {type: foreign, name: city}
+    entity: city
   - name: lg_code
     title: 全国地方公共団体コード
     description: city_code に検査数字を付けた 6 桁
-    entity: {type: foreign, name: city}
+    entity: city
   - name: issue_year
     title: 公開年度
   - name: lng
