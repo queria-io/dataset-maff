@@ -1,6 +1,4 @@
----
-$schema: https://queria.io/schemas/table/v1.json
-table: fude.source_file
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
 title: 筆ポリゴンの元のファイル
 description: |-
   fude.field を作った元のファイルの一覧です。配布元は都道府県ごとに zip を分割して（.zip.001、.zip.002 …）配っているので、分割ファイルごとの行と、それをつないだ zip の行があります。
@@ -10,9 +8,8 @@ description: |-
   - fude.field の source_sha256 は、つないだ zip の行の sha256 を指します
   - ファイル本体は保存していません。分割ファイルは url から取得できます
 primary_key: [file]
-sources:
-  - path: https://www.maff.go.jp/j/tokei/census/shuraku_data/2025/mb/index.html
-fields:
+sources: [2025-mb]
+columns:
   - name: url
     title: ファイルの URL
     description: つないだ zip の行は NULL
@@ -37,5 +34,4 @@ fields:
     title: ファイル名
   - name: prefecture_code
     title: 都道府県コード
-    semantic: {role: entity, name: prefecture}
----
+    entity: {type: foreign, name: prefecture}
