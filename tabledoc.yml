@@ -1,11 +1,11 @@
-$schema: https://queria.io/schemas/dataset/v1.json
+$schema: https://tabledoc.queria.io/schemas/dataset/v1.json
 name: maff
 title: 農林水産省 筆ポリゴン（農地の区画）
 description: |-
   農林水産省の筆ポリゴン（2026年度公開）です。全国の田と畑を 1 枚ずつ区画の形で収録し、田か畑か、重心の経緯度、区画が入る農業集落のコードを持ちます。行政事業レビューのシートが関係する計画・通知等として挙げる農林水産省のサイトの PDF も、ページごとの本文を持ちます。
 
   出典：「筆ポリゴンデータ（2026年度公開）」（農林水産省）。Queria が加工したものです。
-keywords:
+topics:
   - 筆ポリゴン
   - 農地
   - 耕地
@@ -22,14 +22,18 @@ language: ja
 licenses:
   - CC-BY-4.0
 sources:
-  - title: 行政事業レビュー見える化サイト（行政改革推進本部事務局）
+  - id: rssystem
+    title: 行政事業レビュー見える化サイト（行政改革推進本部事務局）
     path: https://rssystem.go.jp
-  - title: 地域の農業を見て・知って・活かすDB 筆ポリゴンデータ
+  - id: 2025-mb
+    title: 地域の農業を見て・知って・活かすDB 筆ポリゴンデータ
     path: https://www.maff.go.jp/j/tokei/census/shuraku_data/2025/mb/index.html
-  - title: 農地の区画情報（筆ポリゴン）のデータ提供・利用
+  - id: porigon
+    title: 農地の区画情報（筆ポリゴン）のデータ提供・利用
     path: https://www.maff.go.jp/j/tokei/porigon/
 contributors:
-  - title: 農林水産省
+  - id: maff
+    title: 農林水産省
     path: https://www.maff.go.jp/
     roles: [rightsHolder]
 spatial_coverage: [JP]
@@ -39,5 +43,3 @@ schemas:
     title: 計画・通知等
   - name: fude
     title: 筆ポリゴン
-themes: [agriculture, land_climate]
-cover: 🌾
