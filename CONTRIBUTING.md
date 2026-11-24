@@ -5,7 +5,7 @@
 ## ビルド
 
 ```bash
-git submodule update --init
+git clone https://github.com/queria-io/dataset-shared.git shared  # 更新は git -C shared pull
 uv sync
 scripts/build.sh                         # 全国
 MAFF_PREFECTURES=13,14 scripts/build.sh  # 東京都と神奈川県だけ
